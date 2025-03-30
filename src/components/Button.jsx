@@ -13,4 +13,5 @@ const Button = ({onClick, className, outline, children}) => {
     </button>
   );
 };
+
 export default Button;

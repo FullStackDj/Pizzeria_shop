@@ -12,12 +12,16 @@ function Home({items}) {
           "Spicy",
           "Closed"
         ]}/>
-        <SortPopup items={['popularity', 'price', 'alphabet']}/>
+        <SortPopup items={[
+          {name: 'popularity', type: 'popular'},
+          {name: 'price', type: 'price'},
+          {name: 'alphabet', type: 'alphabet'}
+        ]}/>
       </div>
       <h2 className="content__title">All Pizzas</h2>
       <div className="content__items">
         {items.map(obj => (
-          <PizzaBlock/>
+          <PizzaBlock key={obj.id} {...obj}/>
         ))}
       </div>
     </div>

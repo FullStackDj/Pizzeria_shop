@@ -1,9 +1,13 @@
-import {configureStore} from '@reduxjs/toolkit';
-
+import {compose, configureStore} from '@reduxjs/toolkit';
+import thunk from 'redux-thunk';
 import rootReducer from './reducers';
+
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const store = configureStore({
   reducer: rootReducer,
-}, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
+  devTools: composeEnhancers
+});
 
 export default store;

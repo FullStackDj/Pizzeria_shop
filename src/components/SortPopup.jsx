@@ -1,28 +1,33 @@
-import React from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 
 function SortPopup({items, activeSortType, onClickSortType}) {
-  const [visiblePopup, setVisiblePopup] = React.useState(false);
-  const sortRef = React.useRef();
-  const activeLabel = items[activeSortType].name;
+  const [visiblePopup, setVisiblePopup] = useState(false);
+  const sortRef = useRef();
 
-  const toggleVisiblePopup = () => {
-    setVisiblePopup(!visiblePopup);
-  };
+  const activeLabel = items && items[activeSortType] ? items[activeSortType].name : '';
 
-  const handleOutsideClick = (e) => {
-    if (!e.composedPath().includes(sortRef.current)) {
+  function toggleVisiblePopup() {
+    setVisiblePopup((prev) => !prev);
+  }
+
+  const handleOutsideClick = useCallback((e) => {
+    if (sortRef.current && !sortRef.current.contains(e.target)) {
       setVisiblePopup(false);
     }
-  };
+  }, []);
 
   const onSelectItem = (index) => {
     onClickSortType(index);
     setVisiblePopup(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     document.body.addEventListener('click', handleOutsideClick);
-  }, [])
+
+    return () => {
+      document.body.removeEventListener('click', handleOutsideClick);
+    };
+  }, [handleOutsideClick]);
 
   return (
     <div ref={sortRef} className="sort">
@@ -43,19 +48,23 @@ function SortPopup({items, activeSortType, onClickSortType}) {
         <b>Sort by:</b>
         <span onClick={toggleVisiblePopup}>{activeLabel}</span>
       </div>
-      {visiblePopup &&
+      {visiblePopup && items && items.length > 0 && (
         <div className="sort__popup">
           <ul>
-            {items && items.map((obj, index) => (
+            {items.map((obj, index) => (
               <li
                 onClick={() => onSelectItem(index)}
                 className={activeSortType === index ? 'active' : ''}
-                key={`${obj.type}_${index}`}>{obj.name}</li>
+                key={`${obj.type}_${index}`}
+              >
+                {obj.name}
+              </li>
             ))}
           </ul>
-        </div>}
+        </div>
+      )}
     </div>
-  )
-};
+  );
+}
 
 export default SortPopup;
